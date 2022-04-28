@@ -1,4 +1,6 @@
+import torch 
 from finlp.model.bilstm_crf import BiLstmModel
+from finlp.util.eval import Metrics
 
 class BiLstmTrainer():
 
@@ -22,4 +24,19 @@ class BiLstmTrainer():
             self.dev_sents, self.dev_tags, 
             self.word2id, self.tag2id
         )
+        
+        model_name = 'lstm'
+        self.model.save()
+
+        print(f"start eval model {model_name}...")
+        predict_tags, target_tags = self.model.test(self.test_sents, self.test_tags, self.word2id, self.tag2id)
+        metrics = Metrics(target_tags, predict_tags, remove_O=False)
+        metrics.report_scores()
+        metrics.report_confusion_matrix()
+
+
+
+
+
+    
 

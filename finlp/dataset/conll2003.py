@@ -1,5 +1,5 @@
 import os
-data_dir = os.path.expanduser('~/.cache/conlldev')
+data_dir = os.path.expanduser('~/.cache/conll2003')
 
 def CoNLL2003(split:str, make_vocab=True, data_dir=data_dir):
     assert split in ['train', 'dev','test']

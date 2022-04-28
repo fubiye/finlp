@@ -27,3 +27,12 @@ def tensorized(batch, maps):
     lengths = [len(l) for l in batch]
 
     return batch_tensor, lengths
+
+def flatten_lists(lists):
+    flatten_list = []
+    for l in lists:
+        if type(l) == list:
+            flatten_list += l
+        else:
+            flatten_list.append(l)
+    return flatten_list

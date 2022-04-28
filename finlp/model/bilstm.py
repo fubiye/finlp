@@ -22,3 +22,7 @@ class BiLstm(nn.Module):
         logits = self.linear(lstm_out) # [batch_size, padded_seq_len, output_size]
         return logits
     
+    def test(self, sents, lengths, _):
+        logits = self.forward(sents, lengths)
+        _, batch_tagids = torch.max(logits, dim=2)
+        return batch_tagids
