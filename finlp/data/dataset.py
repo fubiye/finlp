@@ -1,15 +1,18 @@
 import os
+from collections import Counter, OrderedDict
+from torchtext.vocab import vocab
 from torch.utils.data import Dataset
 from finlp.data.model import Simple
 class CoNLLDataset(Dataset):
 
-    def __init__(self, data_file):
+    def __init__(self, data_file, build_vocab=False):
         self.data_file = data_file
         self.sentences = []
         self.tags = []
         self.samples = []
         self.build_dataset()
-        
+        if build_vocab:
+            self.build_vocab_from_sample()
 
     def build_dataset(self):
         assert os.path.exists(self.data_file)
@@ -51,7 +54,17 @@ class CoNLLDataset(Dataset):
                 words=self.sentences[idx],
                 tags=self.tags[idx]
             ))
-    
+        
+    def build_vocab_from_sample(self):
+        tokens = []
+        for sample in self.samples:
+            tokens += sample.words
+        counter = Counter(tokens)
+        sorted_by_freq_tuples = sorted(counter.items(), key=lambda x: x[1], reverse=True)
+        ordered_dict = OrderedDict(sorted_by_freq_tuples)
+        self.vocab = vocab(ordered_dict, specials=['<unk>','<pad>'])
+        self.vocab.set_default_index(self.vocab['<unk>'])
+
     def __getitem__(self, index):
         return self.samples[index]
 

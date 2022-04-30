@@ -23,3 +23,10 @@ class DatasetTest(unittest.TestCase):
         self.assertEquals(8, len(dataset))
         self.assertEquals(9, len(dataset[0].words))
         
+    def test_build_vocab(self):
+        data_file = os.path.join(dir_path, 'resources/train.txt')
+        dataset = CoNLLDataset(data_file, build_vocab=True)
+        vocab = dataset.vocab
+        self.assertEquals(93, len(vocab))
+        self.assertEquals(0, vocab['<unk>'])
+        self.assertEquals(1, vocab['<pad>'])
