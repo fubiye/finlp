@@ -16,7 +16,7 @@ def main():
     trainer.train()
 
 if __name__ == "__main__":
-    train_file = os.path.expanduser("~/.cache/conll2003/train.txt")
-    dev_file = os.path.expanduser("~/.cache/conll2003/dev.txt")
-    labels_file = os.path.expanduser("~/.cache/conll2003/labels.txt")
+    train_file = os.path.expanduser("~/.cache/conlldev/train.txt")
+    dev_file = os.path.expanduser("~/.cache/conlldev/dev.txt")
+    labels_file = os.path.expanduser("~/.cache/conlldev/labels.txt")
     main()

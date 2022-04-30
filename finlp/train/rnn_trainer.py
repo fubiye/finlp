@@ -26,7 +26,7 @@ class RnnTrainer():
         self.hidden_size = 128
         self.vocab_size = self.tokenizer.vocab_size
         self.output_size = len(self.tag2id) - 1 # remove <pad>
-        self.epoches = 10
+        self.epoches = 5
         self.lr = 1e-3
         self.print_step = 5
 
@@ -71,3 +71,6 @@ class RnnTrainer():
             
             val_loss = losses / step
             return val_loss
+    
+    def test(self):
+        self.model.eval()
