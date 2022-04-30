@@ -16,7 +16,7 @@ class BiLstmModel():
         self.model = BiLstm(vocab_size, self.embedding_dim, self.hidden_size, output_size)
         self.loss_fn = cross_entropy
 
-        self.epoches = 30
+        self.epoches = 10
         self.print_step = 5
         self.lr = 1e-3
         self.batch_size = 32
