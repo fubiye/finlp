@@ -15,3 +15,7 @@ def add_special_token(word2id, tag2id, crf=True):
         tag2id['<start>'] = len(tag2id)
         tag2id['<end>'] = len(tag2id)
     return word2id, tag2id
+
+def add_bert_special_token(tag2id):
+    tag2id['<pad>']  = -100
+    return tag2id
