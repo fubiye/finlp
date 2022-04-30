@@ -28,9 +28,9 @@ class NerDataLoader():
 
         
         pad_token_idx = self.tokenizer.vocab['<pad>']
-        padded_words  = pad_sequence(batch_tokens, padding_value=pad_token_idx)  # T * B * n
+        padded_words  = pad_sequence(batch_tokens, padding_value=pad_token_idx, batch_first=True)  # T * B * n
         pad_tag_idx = self.tag2id['<pad>']
-        padded_tags  = pad_sequence(batch_tags, padding_value=pad_tag_idx)
+        padded_tags  = pad_sequence(batch_tags, padding_value=pad_tag_idx, batch_first=True)
 
         return {
             'padded_tokens': padded_words,

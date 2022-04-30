@@ -3,6 +3,7 @@ from .model import Tokenizer
 class VocabTokenizer(Tokenizer):
     def __init__(self, vocab):
         self.vocab = vocab
+        self.vocab_size = len(vocab)
 
     def tokenize(self, words):
         tokens = []
