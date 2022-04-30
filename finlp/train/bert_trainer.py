@@ -6,7 +6,6 @@ from finlp.model.bert import BertSoftmaxForNerModel
 from finlp.loss.util import cross_entropy
 
 class BertNerDataset(Dataset):
-
     
     def __init__(self, tokenizer, sents, tags, tag2id):
         self.tokenizer = tokenizer
@@ -61,6 +60,7 @@ class BertTrainer():
 
         vocab_size = len(word2id)
         output_size = len(tag2id)
+        self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         print("start init bert model")
         cache_dir = os.path.expanduser('~/.cache/huggingface/transformers')
         model_name = 'bert-base-uncased'
@@ -68,6 +68,7 @@ class BertTrainer():
         self.config = AutoConfig.from_pretrained(model_name)
         self.config.num_labels = output_size
         self.model = BertSoftmaxForNerModel(self.config)
+        self.model.to(self.device)
 
         self.epoches = 1
         self.batch_size = 8
@@ -123,8 +124,8 @@ class BertTrainer():
             self.step = 0
             losses = 0.
             for idx, batch in enumerate(dataloder):
+                batch = tuple(t.to(args.device) for t in batch)
                 losses += self.train_step(batch, self.tag2id)
-                
                 if self.step % self.print_step == 0:
                     total_step = (len(self.train_sents) // self.batch_size + 1)
                     print("epoch {}, steps: {}/{} {:.2f}% loss: {:.4f}".format(
@@ -156,6 +157,7 @@ class BertTrainer():
             steps = 0
             for idx, batch in enumerate(dataloader):
                 steps += 1
+                batch = tuple(t.to(args.device) for t in batch)
                 outputs = self.model(input_ids=batch['input_ids'], token_type_ids=batch['token_type_ids'],attention_mask=batch['attention_mask'])
                 logits = outputs[0]
                 targets = batch['tag_ids']
