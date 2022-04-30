@@ -8,3 +8,9 @@ class Tokenizer(object):
             word_ids.append(idx)
 
         return tokens, word_ids
+
+class Simple(object):
+
+    def __init__(self, words, tags):
+        self.words = words
+        self.tags = tags
