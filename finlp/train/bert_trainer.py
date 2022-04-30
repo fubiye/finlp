@@ -72,7 +72,6 @@ class BertTrainer():
             self.step = 0
             losses = 0.
             for idx, batch in enumerate(dataloder):
-                batch = tuple(t.to(args.device) for t in batch)
                 losses += self.train_step(batch, self.tag2id)
                 if self.step % self.print_step == 0:
                     total_step = (len(self.train_sents) // self.batch_size + 1)
@@ -88,11 +87,14 @@ class BertTrainer():
     def train_step(self, batch, tag2id):
         self.model.train()
         self.step += 1
+        input_ids = batch['input_ids'].to(self.device)
+        token_type_ids = batch['token_type_ids'].to(self.device)
+        attention_mask = batch['attention_mask'].to(self.device)
 
-        outputs = self.model(input_ids=batch['input_ids'], token_type_ids=batch['token_type_ids'],attention_mask=batch['attention_mask'])
+        outputs = self.model(input_ids=input_ids, token_type_ids=token_type_ids,attention_mask=attention_mask)
         logits = outputs[0]
         self.optimizer.zero_grad()
-        targets = batch['tag_ids']
+        targets = batch['tag_ids'].to(self.device)
         loss = self.loss_fn(logits, targets, tag2id)
         loss.backward()
         self.optimizer.step()
@@ -105,10 +107,13 @@ class BertTrainer():
             steps = 0
             for idx, batch in enumerate(dataloader):
                 steps += 1
-                batch = tuple(t.to(args.device) for t in batch)
-                outputs = self.model(input_ids=batch['input_ids'], token_type_ids=batch['token_type_ids'],attention_mask=batch['attention_mask'])
+                input_ids = batch['input_ids'].to(self.device)
+                token_type_ids = batch['token_type_ids'].to(self.device)
+                attention_mask = batch['attention_mask'].to(self.device)
+                outputs = self.model(input_ids=input_ids, token_type_ids=token_type_ids,attention_mask=attention_mask)
+
                 logits = outputs[0]
-                targets = batch['tag_ids']
+                targets = batch['tag_ids'].to(self.device)
                 loss = self.loss_fn(logits, targets, tag2id)
                 losses += loss.item()
                 break
