@@ -1,5 +1,5 @@
 class Tokenizer(object):
-
+    
     def tokenize(self, words):
         tokens = []
         word_ids = []

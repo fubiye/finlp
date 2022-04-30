@@ -71,3 +71,13 @@ class CoNLLDataset(Dataset):
     def __len__(self):
         return len(self.samples)
 
+def load_tags(labels_file):
+    tags = []
+    with open(labels_file,'r',encoding='utf-8') as f:
+        for line in f:
+            tags.append(line.replace("\n", ""))
+    tags += ['<pad>']
+    tag2id = {tag: idx for idx,tag in enumerate(tags)}
+    id2tag = {idx: tag for idx,tag in enumerate(tags)}
+    return tag2id, id2tag
+    

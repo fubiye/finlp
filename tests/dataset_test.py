@@ -1,6 +1,6 @@
 import os
 import unittest
-from finlp.data.dataset import CoNLLDataset
+from finlp.data.dataset import CoNLLDataset, load_tags
 
 dir_path = os.path.dirname(os.path.abspath(__file__))
 
@@ -30,3 +30,7 @@ class DatasetTest(unittest.TestCase):
         self.assertEquals(93, len(vocab))
         self.assertEquals(0, vocab['<unk>'])
         self.assertEquals(1, vocab['<pad>'])
+        labels_file = os.path.join(dir_path, 'resources/labels.txt')
+        tag2id, id2tag = load_tags(labels_file)
+        self.assertEquals(10, len(tag2id))
+        self.assertEqual(9, tag2id['<pad>'])
