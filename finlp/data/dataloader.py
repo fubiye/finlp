@@ -13,17 +13,28 @@ class NerDataLoader():
         self.loader = DataLoader(dataset, batch_size=batch_size, collate_fn=self.collate_fn)
 
     def collate_fn(self, samples):
-        
-        words = [self.tokenizer.tokenize(sample.words) for sample in samples]
-        tags = [[self.tag2id[tag] for tag in sample.tags] for sample in samples]
+        seq_lengths = []
+        batch_tokens = []
+        batch_word_ids = []
+        batch_tags = []
+        for sample in samples:
+            tokens, word_ids = self.tokenizer.tokenize(sample.words)
+            seq_lengths.append(len(sample.words))
+            batch_tokens.append(torch.LongTensor(tokens))
+            batch_word_ids.append(word_ids)
+            
+            tag_ids = torch.LongTensor([self.tag2id[tag] for tag in sample.tags])
+            batch_tags.append(tag_ids)
+
         
         pad_token_idx = self.tokenizer.vocab['<pad>']
-        padded_words, seq_lengths = pad_sequence(words, padding_value=pad_token_idx)  # T * B * n
-        pad_tag_idx = tag2id['<pad>']
-        padded_tags, seq_lengths = pad_sequence(tags, padding_value=pad_tag_idx)
+        padded_words  = pad_sequence(batch_tokens, padding_value=pad_token_idx)  # T * B * n
+        pad_tag_idx = self.tag2id['<pad>']
+        padded_tags  = pad_sequence(batch_tags, padding_value=pad_tag_idx)
 
         return {
-            'padded_words': padded_words,
+            'padded_tokens': padded_words,
+            'batch_word_ids': batch_word_ids,
             'padded_tags': padded_tags,
             'seq_lengths': seq_lengths,
         }
