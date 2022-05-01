@@ -52,7 +52,28 @@ class EntityMetrics():
             'f1': np.average(f1s, weights=supports),
         }
         return result
+    def print_result(self, result):
+        names = [name for name in result if name not in set(['micro_avg','macro_avg'])]
+        digits = 5
+        width = max([len(name) for name in result])
+        width = max(width, digits)
+        headers = ["precision", "recall", "f1-score", "support"]
+        head_fmt = u'{:>{width}s} ' + u' {:>9}' * len(headers)
+        report = u'\n'
+        report += head_fmt.format(u'', *headers, width=width)
+        report += u'\n\n'
+        row_fmt = u'{:>{width}s} ' + u' {:>9.{digits}f}' * 3 + u' {:>9}\n'
+        for _, name in enumerate(names):
+            entity_result = result[name]
+            report += row_fmt.format(*[name, entity_result['precision'], entity_result['recall'], entity_result['f1'], entity_result['support']], width=width, digits=digits)
 
+        report += u'\n'
+        micro_avg = result['micro_avg']
+        report += row_fmt.format('micro avg',micro_avg['precision'], micro_avg['recall'], micro_avg['f1'], micro_avg['support'],width=width, digits=digits)
+        macro_avg =  result['macro_avg']
+        report += row_fmt.format('macro avg', macro_avg['precision'], macro_avg['recall'], macro_avg['f1'],
+                                 macro_avg['support'], width=width, digits=digits)
+        print(report)
     def micro_avg(self, targets, predicts):
         tp_cnt = len(targets & predicts)
         predict_cnt = len(predicts)

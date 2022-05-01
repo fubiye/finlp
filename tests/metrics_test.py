@@ -64,4 +64,5 @@ class EntityLevelMetricsTest(unittest.TestCase):
         target_tag_ids = [[self.tag2id[tag] for tag in tags] for tags in targets]
         predict_tag_ids = [[self.tag2id[tag] for tag in tags] for tags in predicts]
 
-        metrics.report(target_tag_ids, predict_tag_ids)
+        result = metrics.report(target_tag_ids, predict_tag_ids)
+        metrics.print_result(result)
