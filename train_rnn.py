@@ -2,7 +2,7 @@ import os
 
 from finlp.data.dataset import CoNLLDataset, load_tags
 from finlp.data.tokenizer.vocab import VocabTokenizer
-from finlp.data.dataloader import NerDataLoader
+from finlp.data.loader.vocab import NerDataLoader
 from finlp.train.rnn_trainer import RnnTrainer
 
 def main():

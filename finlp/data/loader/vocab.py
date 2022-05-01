@@ -4,6 +4,7 @@ from torch.utils.data import DataLoader
 
 from finlp.data.tokenizer.vocab import Tokenizer
 
+
 class NerDataLoader():
 
     def __init__(self, dataset, tokenizer: Tokenizer, tag2id, batch_size=16):
@@ -22,15 +23,14 @@ class NerDataLoader():
             seq_lengths.append(len(sample.words))
             batch_tokens.append(torch.LongTensor(tokens))
             batch_word_ids.append(word_ids)
-            
+
             tag_ids = torch.LongTensor([self.tag2id[tag] for tag in sample.tags])
             batch_tags.append(tag_ids)
 
-        
         pad_token_idx = self.tokenizer.vocab['<pad>']
-        padded_words  = pad_sequence(batch_tokens, padding_value=pad_token_idx, batch_first=True)  # T * B * n
+        padded_words = pad_sequence(batch_tokens, padding_value=pad_token_idx, batch_first=True)  # T * B * n
         pad_tag_idx = self.tag2id['<pad>']
-        padded_tags  = pad_sequence(batch_tags, padding_value=pad_tag_idx, batch_first=True)
+        padded_tags = pad_sequence(batch_tags, padding_value=pad_tag_idx, batch_first=True)
 
         return {
             'padded_tokens': padded_words,

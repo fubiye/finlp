@@ -5,66 +5,14 @@ from transformers import AutoConfig , AutoTokenizer, AdamW, get_linear_schedule_
 from finlp.model.bert import BertSoftmaxForNerModel
 from finlp.loss.util import cross_entropy
 
-class BertNerDataset(Dataset):
-    
-    def __init__(self, tokenizer, sents, tags, tag2id):
-        self.tokenizer = tokenizer
-        self.sentences = sents
-        self.tags = tags
-        self.tag2id = tag2id
-        self.samples = []
-        self.build_dataset()
-        
-
-    def build_dataset(self):
-                    
-        tokenized_inputs = self.tokenizer(self.sentences, padding=True, truncation=True, is_split_into_words=True, return_tensors='pt')
-                
-        for idx, (input_ids,token_type_ids,attention_mask) in enumerate(zip(tokenized_inputs['input_ids'],tokenized_inputs['token_type_ids'],tokenized_inputs['attention_mask'])):
-            tags = self.tags[idx]
-            tag_ids = [self.tag2id[tag] for tag in tags]
-            word_ids = tokenized_inputs.word_ids(batch_index=idx)
-            previous_word_id = -1
-            token_tag_ids = []
-            for word_id in word_ids:
-                if word_id is None:
-                    token_tag_ids.append(-100)
-                elif word_id == previous_word_id:
-                    token_tag_ids.append(-100)
-                else:
-                    token_tag_ids.append(tag_ids[word_id])
-            self.samples.append({
-                'sample_id': idx,
-                'input_ids': input_ids,
-                'token_type_ids': token_type_ids,
-                'attention_mask': attention_mask,
-                'tag_ids': torch.LongTensor(token_tag_ids)
-            })
-
-    def __getitem__(self, index):
-        return self.samples[index]
-
-    def __len__(self):
-        return len(self.samples)
-
 class BertTrainer():
 
-    def __init__(self,train_data, dev_data, test_data,
-                    word2id, tag2id):
-        self.train_sents, self.train_tags = train_data
-        self.dev_sents, self.dev_tags = dev_data
-        self.test_sents, self.test_tags = test_data
-
-        self.word2id = word2id
-        self.tag2id = tag2id
-
-        vocab_size = len(word2id)
-        output_size = len(tag2id)
+    def __init__(self,train_loader):
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         print("start init bert model")
         cache_dir = os.path.expanduser('~/.cache/huggingface/transformers')
         model_name = 'bert-base-uncased'
-        self.tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir=cache_dir)
+
         self.config = AutoConfig.from_pretrained(model_name)
         self.config.num_labels = output_size
         self.model = BertSoftmaxForNerModel(self.config)

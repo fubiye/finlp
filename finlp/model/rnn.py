@@ -14,15 +14,9 @@ class BiLstm(nn.Module):
     
     def forward(self, sents, lengths):
         embdded = self.embedding(sents) # [batch_size, padded_seq_len, embedding_dim]
-        packed = pack_padded_sequence(embdded, lengths, batch_first=True, enforce_sorted=False
-        )
+        packed = pack_padded_sequence(embdded, lengths, batch_first=True, enforce_sorted=False)
         lstm_out, _ = self.lstm(packed)
         # lstm_out: [batch_size, padded_seq_len, hidden_size * 2]
         lstm_out, _ = pad_packed_sequence(lstm_out, batch_first=True)
         logits = self.linear(lstm_out) # [batch_size, padded_seq_len, output_size]
         return logits
-    
-    def test(self, sents, lengths, _):
-        logits = self.forward(sents, lengths)
-        _, batch_tagids = torch.max(logits, dim=2)
-        return batch_tagids
