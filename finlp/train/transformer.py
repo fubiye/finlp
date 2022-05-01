@@ -69,10 +69,10 @@ class TransformersTrainer:
             for idx, batch in enumerate(self.train_loader):
                 step += 1
                 logits = self.model(
-                    input_ids=batch['input_ids'],
-                    attention_mask=batch['attention_mask'],
-                    token_type_ids=batch['token_type_ids'])
-                token_tag_ids = batch['token_tag_ids']
+                    input_ids=batch['input_ids'].to(self.device),
+                    attention_mask=batch['attention_mask'].to(self.device),
+                    token_type_ids=batch['token_type_ids'].to(self.device))
+                token_tag_ids = batch['token_tag_ids'].to(self.device)
 
                 self.optimizer.zero_grad()
                 loss = self.loss_fn(logits, token_tag_ids, self.tag2id)
@@ -97,10 +97,10 @@ class TransformersTrainer:
             for idx, batch in enumerate(self.dev_loader):
                 step += 1
                 logits = self.model(
-                    input_ids=batch['input_ids'],
-                    attention_mask=batch['attention_mask'],
-                    token_type_ids=batch['token_type_ids'])
-                token_tag_ids = batch['token_tag_ids']
+                    input_ids=batch['input_ids'].to(self.device),
+                    attention_mask=batch['attention_mask'].to(self.device),
+                    token_type_ids=batch['token_type_ids'].to(self.device))
+                token_tag_ids = batch['token_tag_ids'].to(self.device)
 
                 loss = self.loss_fn(logits, token_tag_ids, self.tag2id)
                 losses += loss.item()
@@ -120,10 +120,10 @@ class TransformersTrainer:
             for idx, batch in enumerate(self.test_loader):
                 step += 1
                 logits = self.model(
-                    input_ids=batch['input_ids'],
-                    attention_mask=batch['attention_mask'],
-                    token_type_ids=batch['token_type_ids'])
-                token_tag_ids = batch['token_tag_ids']
+                    input_ids=batch['input_ids'].to(self.device),
+                    attention_mask=batch['attention_mask'].to(self.device),
+                    token_type_ids=batch['token_type_ids'].to(self.device))
+                token_tag_ids = batch['token_tag_ids'].to(self.device)
                 loss = self.loss_fn(logits, token_tag_ids, self.tag2id)
                 losses += loss.item()
 

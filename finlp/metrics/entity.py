@@ -7,6 +7,8 @@ class EntityMetrics():
         self.id2tag = id2tag
         
     def report(self, targets, predicts):
+        targets = [tensor.cpu() for tensor in targets]
+        predicts = [tensor.cpu() for tensor in predicts]
         target_entities, predict_entities = self.extract_entities(targets, predicts)
         target_entities_by_name = self.category_by_name(target_entities)
         predict_entities_by_name = self.category_by_name(predict_entities)

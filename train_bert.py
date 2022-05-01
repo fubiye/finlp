@@ -22,7 +22,7 @@ def main():
 
 if __name__ == "__main__":
     model_name = 'bert-base-uncased'
-    dataset = 'conlldev'
+    dataset = 'conll2003'
     train_file = os.path.expanduser(f"~/.cache/{dataset}/train.txt")
     dev_file = os.path.expanduser(f"~/.cache/{dataset}/dev.txt")
     test_file = os.path.expanduser(f"~/.cache/{dataset}/test.txt")
