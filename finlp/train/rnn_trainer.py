@@ -1,14 +1,19 @@
 import torch
+
 from finlp.model.rnn import BiLstm
 from finlp.loss.util import cross_entropy
+from finlp.metrics.entity import EntityMetrics
 
 class RnnTrainer():
 
-    def __init__(self, train_loader, dev_loader, tokenizer, tag2id):
+    def __init__(self, train_loader, dev_loader, test_loader, tokenizer, tag2id, id2tag):
         self.tokenizer = tokenizer
         self.train_loader = train_loader
         self.dev_loader = dev_loader
+        self.test_loader = test_loader
+
         self.tag2id = tag2id
+        self.id2tag = id2tag
         self.init_params()
         self.model = BiLstm(
             self.vocab_size, 
@@ -74,3 +79,27 @@ class RnnTrainer():
     
     def test(self):
         self.model.eval()
+        with torch.no_grad():
+            losses = 0.
+            step = 0
+
+            targets = []
+            predicts = []
+
+            for idx, batch in enumerate(self.test_loader):
+                step += 1
+                logits = self.model(batch['padded_tokens'], batch['seq_lengths'])
+                padded_tags = batch['padded_tags']
+                loss = self.loss_fn(logits, padded_tags, self.tag2id)
+                losses += loss.item()
+
+                batch_predicts = torch.argmax(logits, dim=2)
+                targets.append(padded_tags)
+                predicts.append(batch_predicts)
+
+            test_loss = losses / step
+            print("test loss: {}".format(test_loss))
+            metrics = EntityMetrics(self.tag2id, self.id2tag)
+            result = metrics.report(targets, predicts)
+            metrics.print_result(result)
+

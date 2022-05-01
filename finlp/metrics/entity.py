@@ -1,5 +1,4 @@
 import numpy as np
-import pandas as pd
 
 class EntityMetrics():
 
@@ -23,7 +22,7 @@ class EntityMetrics():
 
         for name, _targets in target_entities_by_name.items():
             _targets = set(_targets)
-            _predicts = set(predict_entities_by_name[name])
+            _predicts = set(predict_entities_by_name[name]) if name in predict_entities_by_name else set()
 
             true_positive =  len(_targets & _predicts)
             predict_cnt = len(_predicts)
