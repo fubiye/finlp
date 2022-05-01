@@ -60,12 +60,12 @@ class RnnTrainer():
         with torch.no_grad():
             losses = 0.
             step = 0
+
             for idx, batch in enumerate(self.dev_loader):
                 step += 1
                 logits = self.model(batch['padded_tokens'], batch['seq_lengths'])
                 padded_tags = batch['padded_tags']
 
-                
                 loss = self.loss_fn(logits, padded_tags, self.tag2id)
                 losses += loss.item()
             
