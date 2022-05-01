@@ -1,4 +1,4 @@
-from .model import Tokenizer
+from finlp.data.model import Tokenizer
 
 class VocabTokenizer(Tokenizer):
     def __init__(self, vocab):
@@ -13,3 +13,4 @@ class VocabTokenizer(Tokenizer):
             word_ids.append(idx)
 
         return tokens, word_ids
+

@@ -2,7 +2,7 @@ import os
 import unittest
 from finlp.data.dataset import CoNLLDataset
 from finlp.data.dataloader import get_data_loader, rnn_collate_fn
-from finlp.data.tokenizer import VocabTokenizer
+from finlp.data.tokenizer.vocab import VocabTokenizer
 
 dir_path = os.path.dirname(os.path.abspath(__file__))
 

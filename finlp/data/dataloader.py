@@ -2,7 +2,7 @@ import torch
 from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import DataLoader
 
-from finlp.data.tokenizer import Tokenizer
+from finlp.data.tokenizer.vocab import Tokenizer
 
 class NerDataLoader():
 
