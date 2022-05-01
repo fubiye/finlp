@@ -12,9 +12,11 @@ def cross_entropy(logits, targets, tag2id):
     mask = (targets != PAD)
 
     targets = targets[mask]
-    output_size = logits.size(2)
-    logits = logits.masked_select(mask.unsqueeze(2).expand(-1, -1, output_size)).contiguous().view(-1, output_size)
-
+    if len(logits.shape) == 3:
+        output_size = logits.size(2)
+        logits = logits.masked_select(mask.unsqueeze(2).expand(-1, -1, output_size)).contiguous().view(-1, output_size)
+    else:
+        logits = logits[mask]
     assert logits.size(0) == targets.size(0)
     loss = F.cross_entropy(logits, targets)
 
