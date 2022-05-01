@@ -26,8 +26,8 @@ class TransformersTrainer:
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
         self.output_size = len(self.tag2id) - 1  # remove <pad>
-        self.epoches = 1
-        self.lr = 1e-3
+        self.epoches = 10
+        self.lr = 5e-5
         self.weight_decay = 0.
         self.print_step = 5
 
@@ -134,8 +134,8 @@ class TransformersTrainer:
                 token_tag_ids = token_tag_ids[mask]
                 loss = self.loss_fn(logits, token_tag_ids, self.tag2id)
                 losses += loss.item()
-
-                batch_predicts = torch.argmax(logits, dim=2)
+                dim = len(logits.shape) - 1
+                batch_predicts = torch.argmax(logits, dim=dim)
                 targets.append(token_tag_ids)
                 predicts.append(batch_predicts)
 
