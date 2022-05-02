@@ -1,5 +1,5 @@
 import torch
-from transformers import AutoConfig, AdamW
+from transformers import AutoConfig, AdamW, get_linear_schedule_with_warmup
 
 from finlp.loss.util import cross_entropy
 from finlp.model.transformer import BertNerModel
@@ -19,18 +19,20 @@ class TransformersTrainer:
         self.config.num_labels = self.output_size
         self.model = BertNerModel(self.config)
         self.model.to(self.device)
-        self.optimizer = self.get_optimizer()
+        self.optimizer, self.scheduler = self.get_optimizer()
         self.loss_fn = cross_entropy
 
     def init_params(self):
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
         self.output_size = len(self.tag2id) - 1  # remove <pad>
-        self.epoches = 5
+        self.epoches = 3
         self.lr = 5e-5
         self.weight_decay = 0.
         self.print_step = 5
         self.max_grad_norm = 1.
+        self.warmup_steps = 0
+        self.adam_epsilon = 1e-8
 
     def get_optimizer(self):
         no_decay = ["bias", "LayerNorm.weight"]
@@ -59,10 +61,13 @@ class TransformersTrainer:
                 "lr": self.lr
             }
         ]
-        optimizer = AdamW(optimizer_grouped_parameters, lr=self.lr)
-        return optimizer
+        optimizer = AdamW(optimizer_grouped_parameters, lr=self.lr,eps=self.adam_epsilon)
+        num_train_steps = len(self.train_loader) * self.epoches
+        scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=self.warmup_steps, num_training_steps=num_train_steps)
+        return optimizer, scheduler
 
     def train(self):
+        torch.manual_seed(42)
         self.model.train()
         for epoch in range(self.epoches):
             losses = 0.
@@ -85,6 +90,7 @@ class TransformersTrainer:
                 loss.backward()
                 torch.nn.utils.clip_grad_norm_(self.model.parameters(), self.max_grad_norm)
                 self.optimizer.step()
+                self.scheduler.step()
                 self.model.zero_grad()
                 losses += loss.item()
                 if step % self.print_step == 0:
