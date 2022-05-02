@@ -8,6 +8,7 @@ class BertNerModel(BertPreTrainedModel):
         super(BertNerModel, self).__init__(config)
         self.num_labels = config.num_labels
         self.bert = BertModel(config)
+        self.dropout = nn.Dropout(config.hidden_dropout_prob)
         self.linear = nn.Linear(config.hidden_size, config.num_labels)
         self.init_weights()
 
@@ -24,5 +25,6 @@ class BertNerModel(BertPreTrainedModel):
         sequence_output = outputs[0]
         mask = (attention_mask == 1)
         sequence_output = sequence_output[mask]
+        sequence_output = self.dropout(sequence_output)
         logits = self.linear(sequence_output)
         return logits
