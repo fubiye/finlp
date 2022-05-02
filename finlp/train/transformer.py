@@ -4,6 +4,7 @@ from transformers import AutoConfig, AdamW, get_linear_schedule_with_warmup
 from finlp.loss.util import cross_entropy
 from finlp.model.transformer import BertNerModel
 from finlp.metrics.entity import EntityMetrics
+from finlp.metrics.tag import TagMetrics
 
 class TransformersTrainer:
     def __init__(self, model_name, train_loader, dev_loader, test_loader, tokenizer, tag2id, id2tag):
@@ -140,7 +141,8 @@ class TransformersTrainer:
 
             avg_loss = losses / step
             print("{} loss: {}".format(mode, avg_loss))
-            metrics = EntityMetrics(self.tag2id, self.id2tag)
+            # metrics = EntityMetrics(self.tag2id, self.id2tag)
+            metrics = TagMetrics(self.tag2id, self.id2tag)
             result = metrics.report(targets, predicts)
             metrics.print_result(result)
             
