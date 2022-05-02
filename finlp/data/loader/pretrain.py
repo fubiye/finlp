@@ -54,6 +54,6 @@ def assign_token_tag_ids(word_ids, tag_ids, pad_idx=-100):
             token_tag_ids.append(pad_idx)
         else:
             token_tag_ids.append(tag_ids[word_id])
-
+        previous_word_id = word_id
     return token_tag_ids
 
