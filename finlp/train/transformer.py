@@ -66,6 +66,8 @@ class TransformersTrainer:
         for epoch in range(self.epoches):
             losses = 0.
             step = 0
+            batch_num = len(self.train_loader.dataset) / self.train_loader.batch_size
+            eval_interval = int(batch_num * 0.3)
             for idx, batch in enumerate(self.train_loader):
                 step += 1
                 attention_mask = batch['attention_mask'].to(self.device)
@@ -88,32 +90,19 @@ class TransformersTrainer:
                         epoch, step, losses / self.print_step
                     ))
                     losses = 0
+                if step % eval_interval == 0:
+                    val_loss = self.validate()
+                    print('epoch {}, step: {} val loss: {:.4f}'.format(epoch, step, val_loss))
+
             val_loss = self.validate()
             print('epoch {}, val loss: {:.4f}'.format(epoch, val_loss))
-
     def validate(self):
-        self.model.eval()
-        with torch.no_grad():
-            losses = 0.
-            step = 0
-
-            for idx, batch in enumerate(self.dev_loader):
-                step += 1
-                attention_mask = batch['attention_mask'].to(self.device)
-                logits = self.model(
-                    input_ids=batch['input_ids'].to(self.device),
-                    attention_mask=attention_mask,
-                    token_type_ids=batch['token_type_ids'].to(self.device))
-                token_tag_ids = batch['token_tag_ids'].to(self.device)
-                mask = (attention_mask == 1)
-                token_tag_ids = token_tag_ids[mask]
-                loss = self.loss_fn(logits, token_tag_ids, self.tag2id)
-                losses += loss.item()
-
-            val_loss = losses / step
-            return val_loss
+        return self.eval_step(self.dev_loader, 'val')
 
     def test(self):
+        return self.eval_step(self.test_loader, 'test')
+
+    def eval_step(self, loader, mode):
         self.model.eval()
         with torch.no_grad():
             losses = 0.
@@ -122,7 +111,7 @@ class TransformersTrainer:
             targets = []
             predicts = []
 
-            for idx, batch in enumerate(self.test_loader):
+            for idx, batch in enumerate(loader):
                 step += 1
                 attention_mask = batch['attention_mask'].to(self.device)
                 logits = self.model(
@@ -139,8 +128,10 @@ class TransformersTrainer:
                 targets.append(token_tag_ids)
                 predicts.append(batch_predicts)
 
-            test_loss = losses / step
-            print("test loss: {}".format(test_loss))
+            avg_loss = losses / step
+            print("{} loss: {}".format(mode, avg_loss))
             metrics = EntityMetrics(self.tag2id, self.id2tag)
             result = metrics.report(targets, predicts)
             metrics.print_result(result)
+
+            return avg_loss
