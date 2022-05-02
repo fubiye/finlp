@@ -18,6 +18,6 @@ def cross_entropy(logits, targets, tag2id):
     else:
         logits = logits[mask]
     assert logits.size(0) == targets.size(0)
-    loss = F.cross_entropy(logits, targets)
+    loss = F.cross_entropy(logits, targets,label_smoothing=0.1)
 
     return loss
