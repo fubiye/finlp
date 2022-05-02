@@ -96,7 +96,7 @@ class TransformersTrainer:
                 torch.nn.utils.clip_grad_norm_(self.model.parameters(), self.max_grad_norm)
                 self.optimizer.step()
                 self.scheduler.step()
-                self.model.zero_grad()
+                self.optimizer.zero_grad()
                 losses += loss.item()
                 if step % self.print_step == 0:
                     print("training epoch {}, steps: {} loss: {:.4f}".format(
