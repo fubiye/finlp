@@ -30,6 +30,7 @@ class TransformersTrainer:
         self.lr = 5e-5
         self.weight_decay = 0.
         self.print_step = 5
+        self.max_grad_norm = 1.
 
     def get_optimizer(self):
         no_decay = ["bias", "LayerNorm.weight"]
@@ -82,6 +83,7 @@ class TransformersTrainer:
                 self.optimizer.zero_grad()
                 loss = self.loss_fn(logits, token_tag_ids, self.tag2id)
                 loss.backward()
+                torch.nn.utils.clip_grad_norm_(self.model.parameters(), self.max_grad_norm)
                 self.optimizer.step()
                 self.model.zero_grad()
                 losses += loss.item()
