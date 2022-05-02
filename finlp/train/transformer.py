@@ -26,7 +26,7 @@ class TransformersTrainer:
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
         self.output_size = len(self.tag2id) - 1  # remove <pad>
-        self.epoches = 10
+        self.epoches = 5
         self.lr = 5e-5
         self.weight_decay = 0.
         self.print_step = 5

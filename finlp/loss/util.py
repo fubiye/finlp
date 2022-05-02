@@ -9,8 +9,8 @@ def cross_entropy(logits, targets, tag2id):
     PAD = tag2id.get('<pad>')
     assert PAD is not None
 
-    mask = ((targets != PAD) & (targets != 0))
-
+    # mask = ((targets != PAD) & (targets != 0))
+    mask = targets != PAD
     targets = targets[mask]
     if len(logits.shape) == 3:
         output_size = logits.size(2)
