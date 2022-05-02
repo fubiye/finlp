@@ -21,6 +21,7 @@ class RnnTrainer():
             self.hidden_size,
             self.output_size 
         )
+        self.model.to(self.device)
         self.loss_fn = cross_entropy
         self.optimizer = torch.optim.Adam(self.model.parameters(), lr=self.lr)
 
@@ -43,8 +44,11 @@ class RnnTrainer():
             for idx, batch in enumerate(self.train_loader):
                 # batch = next(iter(self.train_loader))
                 step += 1
-                logits = self.model(batch['padded_tokens'], batch['seq_lengths'])
-                padded_tags = batch['padded_tags']
+                self.model.train()
+                padded_tokens = batch['padded_tokens'].to(self.device)
+                seq_lengths = batch['seq_lengths']
+                logits = self.model(padded_tokens, seq_lengths)
+                padded_tags = batch['padded_tags'].to(self.device)
 
                 self.optimizer.zero_grad()
                 loss = self.loss_fn(logits, padded_tags, self.tag2id)
@@ -68,8 +72,10 @@ class RnnTrainer():
 
             for idx, batch in enumerate(self.dev_loader):
                 step += 1
-                logits = self.model(batch['padded_tokens'], batch['seq_lengths'])
-                padded_tags = batch['padded_tags']
+                padded_tokens = batch['padded_tokens'].to(self.device)
+                seq_lengths = batch['seq_lengths']
+                logits = self.model(padded_tokens, seq_lengths)
+                padded_tags = batch['padded_tags'].to(self.device)
 
                 loss = self.loss_fn(logits, padded_tags, self.tag2id)
                 losses += loss.item()
@@ -88,8 +94,10 @@ class RnnTrainer():
 
             for idx, batch in enumerate(self.test_loader):
                 step += 1
-                logits = self.model(batch['padded_tokens'], batch['seq_lengths'])
-                padded_tags = batch['padded_tags']
+                padded_tokens = batch['padded_tokens'].to(self.device)
+                seq_lengths = batch['seq_lengths']
+                logits = self.model(padded_tokens, seq_lengths)
+                padded_tags = batch['padded_tags'].to(self.device)
                 loss = self.loss_fn(logits, padded_tags, self.tag2id)
                 losses += loss.item()
 

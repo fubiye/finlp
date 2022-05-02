@@ -28,13 +28,13 @@ class TransformersTrainer:
 
         self.output_size = len(self.tag2id) - 1  # remove <pad>
         self.epoches = 3
-        self.bert_lr = 3e-5
+        self.bert_lr = 5e-5
         self.lr = 5e-4
 
         self.weight_decay = 0.
         self.print_step = 5
         self.max_grad_norm = 1.
-        self.warmup_steps = 0
+        self.warmup_steps =  100 
         self.adam_epsilon = 1e-8
 
     def get_optimizer(self):
