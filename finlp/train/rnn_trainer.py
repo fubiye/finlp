@@ -3,6 +3,7 @@ import torch
 from finlp.model.rnn import BiLstm
 from finlp.loss.util import cross_entropy
 from finlp.metrics.entity import EntityMetrics
+from finlp.metrics.tag import TagMetrics
 
 class RnnTrainer():
 
@@ -65,25 +66,11 @@ class RnnTrainer():
             val_loss = self.validate()
             print('epoch {}, val loss: {:.4f}'.format(epoch, val_loss))
     def validate(self):
-        self.model.eval()
-        with torch.no_grad():
-            losses = 0.
-            step = 0
-
-            for idx, batch in enumerate(self.dev_loader):
-                step += 1
-                padded_tokens = batch['padded_tokens'].to(self.device)
-                seq_lengths = batch['seq_lengths']
-                logits = self.model(padded_tokens, seq_lengths)
-                padded_tags = batch['padded_tags'].to(self.device)
-
-                loss = self.loss_fn(logits, padded_tags, self.tag2id)
-                losses += loss.item()
-            
-            val_loss = losses / step
-            return val_loss
-    
+        return self.eval_step(self.dev_loader, 'val')
     def test(self):
+         return self.eval_step(self.test_loader, 'test')
+
+    def eval_step(self, loader, mode):
         self.model.eval()
         with torch.no_grad():
             losses = 0.
@@ -92,7 +79,7 @@ class RnnTrainer():
             targets = []
             predicts = []
 
-            for idx, batch in enumerate(self.test_loader):
+            for idx, batch in enumerate(loader):
                 step += 1
                 padded_tokens = batch['padded_tokens'].to(self.device)
                 seq_lengths = batch['seq_lengths']
@@ -105,9 +92,11 @@ class RnnTrainer():
                 targets.append(padded_tags)
                 predicts.append(batch_predicts)
 
-            test_loss = losses / step
-            print("test loss: {}".format(test_loss))
-            metrics = EntityMetrics(self.tag2id, self.id2tag)
+            avg_loss = losses / step
+            print("{} loss: {}".format(mode, avg_loss))
+            # metrics = EntityMetrics(self.tag2id, self.id2tag)
+            metrics = TagMetrics(self.tag2id, self.id2tag)
             result = metrics.report(targets, predicts)
             metrics.print_result(result)
-
+            return avg_loss
+    
