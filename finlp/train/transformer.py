@@ -18,8 +18,8 @@ class TransformersTrainer:
         self.init_params()
         self.config = AutoConfig.from_pretrained(model_name)
         self.config.num_labels = self.output_size
-        # self.model = BertNerModel(self.config)
-        self.model = BertLstmModel(self.config, self.hidden_size)
+        self.model = BertNerModel(self.config)
+        # self.model = BertLstmModel(self.config, self.hidden_size)
         self.model.to(self.device)
         self.optimizer, self.scheduler = self.get_optimizer()
         self.loss_fn = cross_entropy
@@ -87,7 +87,7 @@ class TransformersTrainer:
                     attention_mask=attention_mask,
                     token_type_ids=batch['token_type_ids'].to(self.device))
                 token_tag_ids = batch['token_tag_ids'].to(self.device)
-                mask = (attention_mask == 1)
+                mask = attention_mask == 1
                 token_tag_ids = token_tag_ids[mask]
 
                 self.optimizer.zero_grad()

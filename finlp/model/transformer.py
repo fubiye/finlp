@@ -23,11 +23,12 @@ class BertNerModel(BertPreTrainedModel):
             token_type_ids=token_type_ids,
         )
         sequence_output = outputs[0]
-        mask = (attention_mask == 1)
-        sequence_output = sequence_output[mask]
+        mask = attention_mask == 1
+        # sequence_output = sequence_output[mask]
         sequence_output = self.dropout(sequence_output)
         logits = self.linear(sequence_output)
-        return logits
+        active_logits = logits[mask]
+        return active_logits
 
 class BertLstmModel(BertPreTrainedModel):
 
