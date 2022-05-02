@@ -2,7 +2,7 @@ import torch
 from transformers import AutoConfig, AdamW, get_linear_schedule_with_warmup
 
 from finlp.loss.util import cross_entropy
-from finlp.model.transformer import BertNerModel
+from finlp.model.transformer import BertNerModel, BertLstmModel
 from finlp.metrics.entity import EntityMetrics
 from finlp.metrics.tag import TagMetrics
 
@@ -18,7 +18,8 @@ class TransformersTrainer:
         self.init_params()
         self.config = AutoConfig.from_pretrained(model_name)
         self.config.num_labels = self.output_size
-        self.model = BertNerModel(self.config)
+        # self.model = BertNerModel(self.config)
+        self.model = BertLstmModel(self.config, self.hidden_size)
         self.model.to(self.device)
         self.optimizer, self.scheduler = self.get_optimizer()
         self.loss_fn = cross_entropy
@@ -30,6 +31,7 @@ class TransformersTrainer:
         self.epoches = 3
         self.bert_lr = 5e-5
         self.lr = 5e-4
+        self.hidden_size = 128
 
         self.weight_decay = 0.
         self.print_step = 5

@@ -21,7 +21,6 @@ class BertDataLoader:
         attention_mask = []
         word_ids = []
         token_tag_ids = []
-
         for sample in samples:
             batch_words.append(sample.words)
             tag_ids = torch.LongTensor([self.tag2id[tag] for tag in sample.tags])
