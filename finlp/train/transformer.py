@@ -27,7 +27,9 @@ class TransformersTrainer:
 
         self.output_size = len(self.tag2id) - 1  # remove <pad>
         self.epoches = 3
-        self.lr = 5e-5
+        self.bert_lr = 3e-5
+        self.lr = 5e-4
+
         self.weight_decay = 0.
         self.print_step = 5
         self.max_grad_norm = 1.
@@ -43,12 +45,12 @@ class TransformersTrainer:
             {
                 "params": [p for n, p in bert_parameters if not any(nd in n for nd in no_decay)],
                 "weight_decay": self.weight_decay,
-                "lr": self.lr
+                "lr": self.bert_lr
             },
             {
                 "params": [p for n, p in bert_parameters if any(nd in n for nd in no_decay)],
                 "weight_decay": 0.0,
-                "lr": self.lr
+                "lr": self.bert_lr
             },
             {
                 "params": [p for n, p in classifier_parameters if not any(nd in n for nd in no_decay)],
@@ -61,7 +63,7 @@ class TransformersTrainer:
                 "lr": self.lr
             }
         ]
-        optimizer = AdamW(optimizer_grouped_parameters, lr=self.lr,eps=self.adam_epsilon)
+        optimizer = AdamW(optimizer_grouped_parameters, lr=self.bert_lr,eps=self.adam_epsilon)
         num_train_steps = len(self.train_loader) * self.epoches
         scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=self.warmup_steps, num_training_steps=num_train_steps)
         return optimizer, scheduler
@@ -99,11 +101,11 @@ class TransformersTrainer:
                     ))
                     losses = 0
                 if step % eval_interval == 0:
-                    val_loss = self.validate()
-                    print('epoch {}, step: {} val loss: {:.4f}'.format(epoch, step, val_loss))
+                    val_loss, val_result = self.validate()
+                    print('epoch {}, val loss: {:.4f}, val f1: {:.4f}'.format(epoch, val_loss, val_result['macro_avg']['f1']))
 
-            val_loss = self.validate()
-            print('epoch {}, val loss: {:.4f}'.format(epoch, val_loss))
+            val_loss, val_result = self.validate()
+            print('epoch {}, val loss: {:.4f}, val f1: {:.4f}'.format(epoch, val_loss, val_result['macro_avg']['f1']))
     def validate(self):
         return self.eval_step(self.dev_loader, 'val')
 
@@ -141,5 +143,5 @@ class TransformersTrainer:
             metrics = EntityMetrics(self.tag2id, self.id2tag)
             result = metrics.report(targets, predicts)
             metrics.print_result(result)
-
-            return avg_loss
+            
+            return avg_loss, result
