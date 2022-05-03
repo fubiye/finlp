@@ -6,12 +6,12 @@ from finlp.data.model import Tokenizer
 
 class BertDataLoader:
 
-    def __init__(self, dataset, tokenizer: Tokenizer, tag2id, batch_size=32):
+    def __init__(self, dataset, tokenizer: Tokenizer, tag2id,shuffle=False,batch_size=32):
         self.dataset = dataset
         self.tokenizer = tokenizer
         self.tag2id = tag2id
         self.tag_pad_id = tag2id.get('<pad>')
-        self.loader = DataLoader(dataset,shuffle=True,batch_size=batch_size, collate_fn=self.collate_fn)
+        self.loader = DataLoader(dataset,shuffle=shuffle,batch_size=batch_size, collate_fn=self.collate_fn)
 
     def collate_fn(self, samples):
         batch_words = []

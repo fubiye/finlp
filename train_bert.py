@@ -13,7 +13,7 @@ def main():
     tag2id, id2tag = load_tags(labels_file)
 
     tokenizer = PreTrainTokenizer(model_name)
-    train_loader = BertDataLoader(train_dataset, tokenizer, tag2id)
+    train_loader = BertDataLoader(train_dataset, tokenizer, tag2id,shuffle=True)
     dev_loader = BertDataLoader(dev_dataset, tokenizer, tag2id)
     test_loader = BertDataLoader(test_dataset, tokenizer, tag2id)
     trainer = TransformersTrainer(model_name, train_loader.loader, dev_loader.loader, test_loader.loader, tokenizer, tag2id, id2tag)
