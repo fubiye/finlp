@@ -1,0 +1,16 @@
+python train_bert.py \
+--model_type bert \
+--model_name_or_path bert-base-uncased \
+--output_dir output/bert \
+--dataset conll2003 \
+--do_train \
+--do_eval \
+--evaluate_during_training \
+--adv_training fgm \
+--num_train_epochs 3 \
+--max_seq_length 128 \
+--logging_steps 0.1 \
+--batch_size 32 \
+--learning_rate 5e-5 \
+--bert_lr 5e-5 \
+--classifier_lr 1e-4
