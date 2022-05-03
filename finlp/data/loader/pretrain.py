@@ -6,7 +6,7 @@ from finlp.data.model import Tokenizer
 
 class BertDataLoader:
 
-    def __init__(self, dataset, tokenizer: Tokenizer, tag2id,shuffle=False,batch_size=32):
+    def __init__(self, dataset, tokenizer: Tokenizer, tag2id,shuffle=False,batch_size=4):
         self.dataset = dataset
         self.tokenizer = tokenizer
         self.tag2id = tag2id
