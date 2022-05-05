@@ -70,8 +70,10 @@ class SoftmaxNerTrainer:
         logger.info("Tokenizer arguments: %s", self.tokenizer_args)
 
     def init_train_tokenizer(self, args):
+        model_name_or_path = 'bert-base-uncased'
         self.tokenizer = AutoTokenizer.from_pretrained(
-            args.model_name_or_path,
+            # args.model_name_or_path,
+            model_name_or_path,
             cache_dir=args.transformers_cache_dir,
             **self.tokenizer_args,
         )

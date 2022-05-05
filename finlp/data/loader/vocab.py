@@ -32,9 +32,12 @@ class NerDataLoader():
         pad_tag_idx = self.tag2id['<pad>']
         padded_tags = pad_sequence(batch_tags, padding_value=pad_tag_idx, batch_first=True)
 
+        lengths = torch.tensor(seq_lengths)
+        sorted_lens, indices = lengths.sort(0, descending=True)
+
         return {
-            'padded_tokens': padded_words,
-            'batch_word_ids': batch_word_ids,
-            'padded_tags': padded_tags,
-            'seq_lengths': seq_lengths,
+            'padded_tokens': padded_words[indices],
+            # 'batch_word_ids': batch_word_ids,
+            'padded_tags': padded_tags[indices],
+            'seq_lengths': sorted_lens.numpy().tolist(),
         }

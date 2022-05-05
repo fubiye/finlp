@@ -14,7 +14,7 @@ def load_and_cache_examples(args, tokenizer, labels, pad_token_label_id, mode):
     cached_features_file = os.path.join(
         dataset_path,
         "cached_{}_{}_{}".format(
-            mode, list(filter(None, args.model_name_or_path.split("/"))).pop(), str(args.max_seq_length)
+            mode, list(filter(None, args.model_name_or_path.split("\\"))).pop(), str(args.max_seq_length)
         ),
     )
     if os.path.exists(cached_features_file) and not args.overwrite_cache:
