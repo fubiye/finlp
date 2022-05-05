@@ -2,6 +2,9 @@ import torch
 
 from finlp.model.rnn import BiLstmCrf
 from finlp.metrics.entity import EntityMetrics
+from finlp.metrics.tag import TagMetrics
+from seqeval.metrics.sequence_labeling import classification_report
+from finlp.transformer.metrics import get_entities_bio
 
 
 class LstmCrfTrainer:
@@ -93,9 +96,28 @@ class LstmCrfTrainer:
 
             avg_loss = losses / step
             print("{} loss: {}".format(mode, avg_loss))
-            metrics = EntityMetrics(self.tag2id, self.id2tag)
+            # metrics = EntityMetrics(self.tag2id, self.id2tag)
             # metrics = TagMetrics(self.tag2id, self.id2tag)
-            result = metrics.report(targets, predicts)
-            metrics.print_result(result)
+            # result = metrics.report(targets, predicts)
+            # metrics.print_result(result)
+
+            # true_entities = get_entities_bio(targets)
+            # pred_entities = get_entities_bio(predicts)
+            targets = torch.concat(targets).numpy().tolist()
+            predicts = torch.concat(predicts).numpy().tolist()
+            y_true, y_pred = [], []
+            pad_idx = self.tag2id.get('<pad>')
+
+            for idx, line in enumerate(targets):
+                true, pred = [], []
+                for token_idx, token in enumerate(line):
+                    if token == pad_idx:
+                        break
+                    true.append(self.id2tag[token])
+                    pred.append(self.id2tag[predicts[idx][token_idx]])
+                y_true.append(true)
+                y_pred.append(pred)
+            report = classification_report(y_true, y_pred)
+            print(report)
             return avg_loss
 
