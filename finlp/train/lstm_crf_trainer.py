@@ -91,8 +91,8 @@ class LstmCrfTrainer:
                 losses += loss.item()
 
                 # batch_predicts = torch.argmax(logits, dim=2)
-                targets.append(padded_tags)
-                predicts.append(batch_predicts)
+                targets += padded_tags.numpy().tolist()
+                predicts += batch_predicts.numpy().tolist()
 
             avg_loss = losses / step
             print("{} loss: {}".format(mode, avg_loss))
@@ -103,8 +103,8 @@ class LstmCrfTrainer:
 
             # true_entities = get_entities_bio(targets)
             # pred_entities = get_entities_bio(predicts)
-            targets = torch.concat(targets).numpy().tolist()
-            predicts = torch.concat(predicts).numpy().tolist()
+            # targets = torch.concat(targets).numpy().tolist()
+            # predicts = torch.concat(predicts).numpy().tolist()
             y_true, y_pred = [], []
             pad_idx = self.tag2id.get('<pad>')
 
