@@ -1,0 +1,16 @@
+python train_bert.py \
+--model_type bert \
+--model_name_or_path bert-base-uncased \
+--output_dir output/finrisk \
+--dataset finrisk \
+--do_train \
+--do_eval \
+--evaluate_during_training \
+--adv_training fgm \
+--num_train_epochs 3 \
+--max_seq_length 128 \
+--logging_steps 0.1 \
+--batch_size 8 \
+--learning_rate 3e-5 \
+--bert_lr 2e-5 \
+--classifier_lr 5e-5

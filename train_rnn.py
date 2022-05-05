@@ -21,9 +21,9 @@ def main():
     trainer.test()
 
 if __name__ == "__main__":
-    dataset = 'conll2003'
+    dataset = 'finrisk'
     train_file = os.path.expanduser(f"~/.cache/{dataset}/train.txt")
     dev_file = os.path.expanduser(f"~/.cache/{dataset}/dev.txt")
-    test_file = os.path.expanduser(f"~/.cache/{dataset}/test.txt")
+    test_file = os.path.expanduser(f"~/.cache/{dataset}/dev.txt")
     labels_file = os.path.expanduser(f"~/.cache/{dataset}/labels.txt")
     main()

@@ -94,8 +94,8 @@ class RnnTrainer():
 
             avg_loss = losses / step
             print("{} loss: {}".format(mode, avg_loss))
-            # metrics = EntityMetrics(self.tag2id, self.id2tag)
-            metrics = TagMetrics(self.tag2id, self.id2tag)
+            metrics = EntityMetrics(self.tag2id, self.id2tag)
+            # metrics = TagMetrics(self.tag2id, self.id2tag)
             result = metrics.report(targets, predicts)
             metrics.print_result(result)
             return avg_loss
